@@ -23,6 +23,16 @@ import type { FunctionReference } from "convex/server";
  */
 export type ComponentApi<Name extends string | undefined = string | undefined> =
   {
+    admin: {
+      listSessions: FunctionReference<
+        "query",
+        "internal",
+        { limit?: number },
+        any,
+        Name
+      >;
+      overview: FunctionReference<"query", "internal", {}, any, Name>;
+    };
     chargers: {
       boot: FunctionReference<
         "mutation",
@@ -98,6 +108,71 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         Name
       >;
     };
+    payments: {
+      create: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          authorizedMinor: number;
+          currency: string;
+          mode: "hold" | "prepaid";
+          organizationId: string;
+          provider: "stripe" | "wompi" | "mercadopago" | "demo";
+          sessionId: string;
+        },
+        any,
+        Name
+      >;
+      get: FunctionReference<
+        "query",
+        "internal",
+        { paymentId: string },
+        any,
+        Name
+      >;
+      markAuthorized: FunctionReference<
+        "mutation",
+        "internal",
+        { paymentId: string; providerRef?: string },
+        any,
+        Name
+      >;
+      markCanceled: FunctionReference<
+        "mutation",
+        "internal",
+        { paymentId: string },
+        any,
+        Name
+      >;
+      markCaptured: FunctionReference<
+        "mutation",
+        "internal",
+        { capturedMinor: number; paymentId: string },
+        any,
+        Name
+      >;
+      markFailed: FunctionReference<
+        "mutation",
+        "internal",
+        { paymentId: string },
+        any,
+        Name
+      >;
+      markProcessed: FunctionReference<
+        "mutation",
+        "internal",
+        { key: string },
+        any,
+        Name
+      >;
+      setProviderRef: FunctionReference<
+        "mutation",
+        "internal",
+        { paymentId: string; providerRef: string },
+        any,
+        Name
+      >;
+    };
     sessions: {
       createFromQr: FunctionReference<
         "mutation",
@@ -142,6 +217,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         any,
         Name
       >;
+      previewByQr: FunctionReference<
+        "query",
+        "internal",
+        { qrToken: string },
+        any,
+        Name
+      >;
       requestStop: FunctionReference<
         "mutation",
         "internal",
@@ -176,6 +258,9 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
     };
     setup: {
       seedDemo: FunctionReference<"mutation", "internal", {}, any, Name>;
+    };
+    stations: {
+      listPublic: FunctionReference<"query", "internal", {}, any, Name>;
     };
     tariffs: {
       create: FunctionReference<

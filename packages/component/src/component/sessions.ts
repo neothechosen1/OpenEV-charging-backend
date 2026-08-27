@@ -21,6 +21,45 @@ async function nextTransactionId(ctx: MutationCtx): Promise<number> {
   return row.value;
 }
 
+/** Read-only checkout preview for the QR landing page — creates nothing. */
+export const previewByQr = query({
+  args: { qrToken: v.string() },
+  handler: async (ctx, args) => {
+    const connector = await ctx.db
+      .query("connectors")
+      .withIndex("by_qrToken", (q) => q.eq("qrToken", args.qrToken))
+      .unique();
+    if (!connector) return null;
+    const charger = await ctx.db.get(connector.chargerId);
+    const property = await ctx.db.get(connector.propertyId);
+    const tariff = connector.tariffId ? await ctx.db.get(connector.tariffId) : null;
+    if (!charger || !property) return null;
+    const conn = await ctx.db
+      .query("chargerConnections")
+      .withIndex("by_chargerId", (q) => q.eq("chargerId", charger._id))
+      .unique();
+    const authorizedMinor = tariff
+      ? Math.round((30_000 * tariff.pricePerKwhMinor) / 1000) + tariff.sessionFeeMinor
+      : 0;
+    return {
+      chargerName: charger.name,
+      propertyName: property.name,
+      propertyAddress: `${property.address}, ${property.city}`,
+      connectorNumber: connector.connectorNumber,
+      connectorType: connector.connectorType,
+      maxPowerKw: connector.maxPowerKw,
+      status: connector.ocppStatus,
+      busy: connector.currentSessionId !== undefined,
+      chargerOnline: conn?.online ?? false,
+      currency: tariff?.currency ?? property.currency,
+      pricePerKwhMinor: tariff?.pricePerKwhMinor ?? null,
+      sessionFeeMinor: tariff?.sessionFeeMinor ?? null,
+      idleFeePerMinuteMinor: tariff?.idleFeePerMinuteMinor ?? null,
+      authorizedMinor,
+    };
+  },
+});
+
 /** Driver scanned the QR: create a session with a frozen tariff snapshot. */
 export const createFromQr = mutation({
   args: {
@@ -77,6 +116,7 @@ export const createFromQr = mutation({
     });
     return {
       sessionId,
+      organizationId: connector.organizationId,
       tariffSnapshot,
       authorizedMinor,
       chargerName: charger.name,
@@ -338,6 +378,17 @@ export const getLive = query({
     const costMinor =
       session.amounts?.totalMinor ??
       runningCostMinor(session.tariffSnapshot, session.energyWh);
-    return { ...session, costMinor };
+    const payment = session.paymentId ? await ctx.db.get(session.paymentId) : null;
+    return {
+      ...session,
+      costMinor,
+      payment: payment
+        ? {
+            provider: payment.provider,
+            status: payment.status,
+            capturedMinor: payment.capturedMinor ?? null,
+          }
+        : null,
+    };
   },
 });

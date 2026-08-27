@@ -1,6 +1,11 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { components } from "./_generated/api";
+import type {
+  AdminOverview,
+  AdminSessionRow,
+  PublicStation,
+} from "@openev/charging";
 
 /** Seed the Colombia-first demo world (idempotent). */
 export const seedDemo = mutation({
@@ -53,5 +58,40 @@ export const stopSession = mutation({
       sessionId: args.sessionId,
     });
     return null;
+  },
+});
+
+/** QR landing page preview — no session created yet. */
+export const previewByQr = query({
+  args: { qrToken: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.runQuery(components.evCharging.sessions.previewByQr, {
+      qrToken: args.qrToken,
+    });
+  },
+});
+
+/** Operator dashboard (chargers, live sessions, today's revenue). */
+export const adminOverview = query({
+  args: {},
+  handler: async (ctx): Promise<AdminOverview | null> => {
+    return await ctx.runQuery(components.evCharging.admin.overview, {});
+  },
+});
+
+export const adminSessions = query({
+  args: { limit: v.optional(v.number()) },
+  handler: async (ctx, args): Promise<AdminSessionRow[]> => {
+    return await ctx.runQuery(components.evCharging.admin.listSessions, {
+      limit: args.limit,
+    });
+  },
+});
+
+/** Public station directory (also served at GET /api/public/stations). */
+export const publicStations = query({
+  args: {},
+  handler: async (ctx): Promise<PublicStation[]> => {
+    return await ctx.runQuery(components.evCharging.stations.listPublic, {});
   },
 });

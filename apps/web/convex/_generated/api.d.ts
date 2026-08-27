@@ -10,6 +10,8 @@
 
 import type * as charging from "../charging.js";
 import type * as http from "../http.js";
+import type * as lib_stripeWebhook from "../lib/stripeWebhook.js";
+import type * as stripe from "../stripe.js";
 
 import type {
   ApiFromModules,
@@ -20,6 +22,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   charging: typeof charging;
   http: typeof http;
+  "lib/stripeWebhook": typeof lib_stripeWebhook;
+  stripe: typeof stripe;
 }>;
 
 /**
