@@ -13,7 +13,7 @@ new_sqlite_classes = ["ChargerDO"]
 
 [vars]
 # Your Convex deployment's HTTP endpoint (the .convex.site URL).
-CONVEX_HTTP_URL = "https://YOUR-DEPLOYMENT.convex.site"
+CONVEX_HTTP_URL = "https://laudable-shrimp-94.convex.site"
 # GATEWAY_SHARED_SECRET is a secret:
 #   local dev  -> put it in .dev.vars (gitignored)
 #   production -> `wrangler secret put GATEWAY_SHARED_SECRET`

@@ -1,4 +1,5 @@
 import { httpRouter } from "convex/server";
+import { registerStaticRoutes } from "@convex-dev/static-hosting";
 import { httpAction } from "./_generated/server";
 import { components, internal } from "./_generated/api";
 import { parseMeterValues } from "@openev/charging/ocpp";
@@ -6,6 +7,10 @@ import type { PublicStation } from "@openev/charging";
 import { verifyStripeSignature } from "./lib/stripeWebhook";
 
 const http = httpRouter();
+
+// Serves the built frontend from this same deployment (…convex.site).
+// Exact routes below always win over the static catch-all.
+registerStaticRoutes(http, components.staticHosting);
 
 // All OCPP traffic from the gateway lands here. The gateway is dumb transport:
 // it forwards raw OCPP payloads; this endpoint answers with the OCPP reply plus

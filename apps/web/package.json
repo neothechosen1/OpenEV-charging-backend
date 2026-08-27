@@ -10,6 +10,7 @@
     "typecheck": "tsc -p . && tsc -p convex"
   },
   "dependencies": {
+    "@convex-dev/static-hosting": "^0.2.1",
     "@openev/charging": "workspace:*",
     "convex": "^1.17.0",
     "lucide-react": "^1.34.0",
