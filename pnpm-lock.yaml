@@ -38,6 +38,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@convex-dev/static-hosting':
+        specifier: ^0.2.1
+        version: 0.2.1(convex@1.45.0(react@18.3.1))(react@18.3.1)
       '@openev/charging':
         specifier: workspace:*
         version: link:../../packages/component
@@ -236,6 +239,13 @@ packages:
 
   '@cloudflare/workers-types@5.20260826.1':
     resolution: {integrity: sha512-hyW0QHvJYKhsMTAx1YZkbhcXBr17Brl1xZwvVExYmB5pAExJCCzAEouKNGwag2H+yBlqLay3X3kZoiJoGu2DRw==}
+
+  '@convex-dev/static-hosting@0.2.1':
+    resolution: {integrity: sha512-QMcfKUOB8dHeLa81xzk2GEIn7LzhEvtdgYhfFpIFer6uE/+xMStDxHAZsX5h1qsttYi7wNbEKAMf7MfOQ7ZrMw==}
+    hasBin: true
+    peerDependencies:
+      convex: ^1.37.0
+      react: ^18.3.1 || ^19.0.0
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -2184,6 +2194,11 @@ snapshots:
     optional: true
 
   '@cloudflare/workers-types@5.20260826.1': {}
+
+  '@convex-dev/static-hosting@0.2.1(convex@1.45.0(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      convex: 1.45.0(react@18.3.1)
+      react: 18.3.1
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
