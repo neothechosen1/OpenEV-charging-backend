@@ -130,6 +130,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         any,
         Name
       >;
+      getByProviderRef: FunctionReference<
+        "query",
+        "internal",
+        { providerRef: string },
+        any,
+        Name
+      >;
       markAuthorized: FunctionReference<
         "mutation",
         "internal",
@@ -169,6 +176,19 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "mutation",
         "internal",
         { paymentId: string; providerRef: string },
+        any,
+        Name
+      >;
+    };
+    properties: {
+      setElectricityCost: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          electricityCostPerKwhMinor: number;
+          propertyId: string;
+          source?: string;
+        },
         any,
         Name
       >;

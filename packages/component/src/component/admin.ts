@@ -11,6 +11,13 @@ export const overview = query({
     const organization = (await ctx.db.query("organizations").take(1))[0];
     if (!organization) return null;
 
+    const firstProperty = (
+      await ctx.db
+        .query("properties")
+        .withIndex("by_organizationId", (q) => q.eq("organizationId", organization._id))
+        .take(1)
+    )[0];
+
     const chargers = await ctx.db
       .query("chargers")
       .withIndex("by_organizationId", (q) => q.eq("organizationId", organization._id))
@@ -104,6 +111,14 @@ export const overview = query({
         currency: organization.currency,
         platformFeeBps: organization.platformFeeBps,
       },
+      property: firstProperty
+        ? {
+            propertyId: firstProperty._id,
+            name: firstProperty.name,
+            electricityCostPerKwhMinor: firstProperty.electricityCostPerKwhMinor,
+            currency: firstProperty.currency,
+          }
+        : null,
       kpis: {
         chargersTotal: chargers.length,
         chargersOnline,

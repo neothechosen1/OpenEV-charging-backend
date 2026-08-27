@@ -14,6 +14,7 @@ import type * as commands from "../commands.js";
 import type * as lib_ids from "../lib/ids.js";
 import type * as lib_pricing from "../lib/pricing.js";
 import type * as payments from "../payments.js";
+import type * as properties from "../properties.js";
 import type * as sessions from "../sessions.js";
 import type * as setup from "../setup.js";
 import type * as stations from "../stations.js";
@@ -33,6 +34,7 @@ const fullApi: ApiFromModules<{
   "lib/ids": typeof lib_ids;
   "lib/pricing": typeof lib_pricing;
   payments: typeof payments;
+  properties: typeof properties;
   sessions: typeof sessions;
   setup: typeof setup;
   stations: typeof stations;
