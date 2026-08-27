@@ -1,11 +1,39 @@
-* {
-  box-sizing: border-box;
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0b7a4b;
+  --color-primary-hover: #096540;
+  --color-primary-soft: #0b7a4b14;
+  --color-accent: #b77e12;
+
+  --color-surface: #fafaf7;
+  --color-raised: #ffffff;
+  --color-sunken: #f3f2ec;
+  --color-line: #e7e5de;
+  --color-line-strong: #d6d3ca;
+
+  --color-ink: #1b1f1d;
+  --color-muted: #67706b;
+  --color-subtle: #99a19c;
+
+  --color-success: #177245;
+  --color-warn: #b45309;
+  --color-danger: #b3261e;
+
+  --font-sans: "Geist", system-ui, -apple-system, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
 }
+
 body {
-  margin: 0;
-  background: #ffffff;
-  color: #111111;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
-li {
-  margin: 12px 0;
+
+.tnum {
+  font-variant-numeric: tabular-nums;
 }
