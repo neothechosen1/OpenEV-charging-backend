@@ -1,0 +1,11 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #ffffff;
+  color: #111111;
+}
+li {
+  margin: 12px 0;
+}

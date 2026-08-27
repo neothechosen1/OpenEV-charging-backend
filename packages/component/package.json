@@ -1,0 +1,23 @@
+{
+  "name": "@openev/charging",
+  "version": "0.1.0",
+  "description": "Convex component: turn any OCPP 1.6J EV charger into a monetized charging station",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/client/index.ts",
+    "./convex.config": "./src/component/convex.config.ts",
+    "./ocpp": "./src/ocpp/parse.ts",
+    "./pricing": "./src/component/lib/pricing.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p ."
+  },
+  "peerDependencies": {
+    "convex": "^1.17.0"
+  },
+  "devDependencies": {
+    "convex": "^1.17.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "openev",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Open-source Convex backend that turns any OCPP EV charger into a monetized charging station",
+  "license": "MIT",
+  "scripts": {
+    "dev:web": "pnpm --filter @openev/web dev",
+    "dev:convex": "pnpm --filter @openev/web dev:convex",
+    "dev:gateway": "pnpm --filter @openev/gateway dev",
+    "simulate": "pnpm --filter @openev/simulator start",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
+  },
+  "packageManager": "pnpm@10.23.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "workerd"
+    ]
+  }
+}
