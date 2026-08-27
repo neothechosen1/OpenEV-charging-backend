@@ -75,6 +75,17 @@ export const get = query({
   },
 });
 
+export const getByProviderRef = query({
+  args: { providerRef: v.string() },
+  handler: async (ctx, args) => {
+    const matches = await ctx.db
+      .query("payments")
+      .withIndex("by_providerRef", (q) => q.eq("providerRef", args.providerRef))
+      .take(1);
+    return matches[0] ?? null;
+  },
+});
+
 /**
  * Idempotency helper for webhook redeliveries and OCPP retries.
  * Returns true the first time a key is seen, false on repeats.

@@ -5,6 +5,7 @@ import { components, internal } from "./_generated/api";
 import { parseMeterValues } from "@openev/charging/ocpp";
 import type { PublicStation } from "@openev/charging";
 import { verifyStripeSignature } from "./lib/stripeWebhook";
+import { verifyWompiSignature, type WompiEvent } from "./lib/wompiWebhook";
 
 const http = httpRouter();
 
@@ -107,11 +108,23 @@ http.route({
             reason: payload.reason as string | undefined,
           },
         );
-        // Card holds are captured for the actual final amount right away.
-        if (result.sessionId && result.paymentMode === "hold") {
-          await ctx.scheduler.runAfter(0, internal.stripe.captureForSession, {
-            sessionId: result.sessionId,
-          });
+        if (result.sessionId) {
+          // Card holds are captured for the actual final amount right away;
+          // prepaid packages get their consumption recorded.
+          if (result.paymentMode === "hold") {
+            await ctx.scheduler.runAfter(0, internal.stripe.captureForSession, {
+              sessionId: result.sessionId,
+            });
+          } else if (result.paymentMode === "prepaid") {
+            await ctx.scheduler.runAfter(0, internal.wompi.finalizeForSession, {
+              sessionId: result.sessionId,
+            });
+          }
+          if (result.driverEmail) {
+            await ctx.scheduler.runAfter(0, internal.receipts.sendReceipt, {
+              sessionId: result.sessionId,
+            });
+          }
         }
         reply = { idTagInfo: { status: "Accepted" } };
         break;
@@ -210,6 +223,59 @@ http.route({
           paymentId,
         });
       }
+    }
+    return Response.json({ received: true });
+  }),
+});
+
+// Wompi event webhook — signature-verified, deduplicated, idempotent.
+http.route({
+  path: "/webhooks/wompi",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const secret = process.env.WOMPI_EVENTS_SECRET;
+    if (!secret) return new Response("webhook not configured", { status: 501 });
+    const event = (await req.json()) as WompiEvent;
+    if (!(await verifyWompiSignature(event, secret))) {
+      return new Response("bad signature", { status: 400 });
+    }
+    const tx = (event.data as {
+      transaction?: {
+        id: string;
+        status: string;
+        amount_in_cents: number;
+        payment_link_id?: string | null;
+      };
+    }).transaction;
+    if (!tx) return Response.json({ received: true });
+    const fresh = await ctx.runMutation(components.evCharging.payments.markProcessed, {
+      key: `wompi-evt:${tx.id}:${tx.status}`,
+    });
+    if (!fresh) return Response.json({ received: true, duplicate: true });
+
+    const payment = tx.payment_link_id
+      ? await ctx.runQuery(components.evCharging.payments.getByProviderRef, {
+          providerRef: `plink:${tx.payment_link_id}`,
+        })
+      : null;
+    if (payment && tx.status === "APPROVED" && payment.status === "requires_payment") {
+      await ctx.runMutation(components.evCharging.payments.markAuthorized, {
+        paymentId: payment._id,
+        providerRef: tx.id,
+      });
+      if (payment.sessionId) {
+        await ctx.runMutation(components.evCharging.sessions.markAuthorized, {
+          sessionId: payment.sessionId,
+          paymentId: payment._id,
+        });
+      }
+    } else if (
+      payment &&
+      (tx.status === "DECLINED" || tx.status === "ERROR" || tx.status === "VOIDED")
+    ) {
+      await ctx.runMutation(components.evCharging.payments.markFailed, {
+        paymentId: payment._id,
+      });
     }
     return Response.json({ received: true });
   }),

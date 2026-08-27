@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useMutation, useQuery } from "convex/react";
-import { QrCode, OctagonX } from "lucide-react";
+import { useAction, useMutation, useQuery } from "convex/react";
+import { QrCode, OctagonX, Download } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import {
   Badge,
@@ -23,7 +23,11 @@ export default function Admin() {
   const data = useQuery(api.charging.adminOverview, {});
   const sessions = useQuery(api.charging.adminSessions, { limit: 25 });
   const stopSession = useMutation(api.charging.stopSession);
+  const suggestCost = useAction(api.tools.suggestElectricityCost);
   const [qr, setQr] = useState<{ url: string; title: string } | null>(null);
+  const [tariffUrl, setTariffUrl] = useState("");
+  const [importBusy, setImportBusy] = useState(false);
+  const [importMsg, setImportMsg] = useState<string | null>(null);
 
   if (data === undefined) {
     return (
@@ -83,6 +87,61 @@ export default function Admin() {
           sub={`Fee ${money(kpis.platformFeeTodayMinor, currency)} · Net ${money(kpis.operatorNetTodayMinor, currency)}`}
         />
       </div>
+
+      {data.property && (
+        <Card title="Electricity cost" className="mt-6">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="min-w-40">
+              <div className="text-xs text-subtle">{data.property.name} — current</div>
+              <div className="tnum text-lg font-semibold">
+                {money(data.property.electricityCostPerKwhMinor, data.property.currency)}
+                <span className="text-sm font-normal text-muted"> / kWh</span>
+              </div>
+            </div>
+            <label className="min-w-56 flex-1">
+              <span className="text-xs font-medium text-subtle">
+                Import from your utility's tariff page
+              </span>
+              <input
+                className="mt-1 w-full rounded-lg border border-line bg-raised px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                placeholder="https://www.your-utility.com/tarifas"
+                value={tariffUrl}
+                onChange={(e) => setTariffUrl(e.target.value)}
+              />
+            </label>
+            <button
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-line bg-raised px-4 py-2.5 text-sm font-medium hover:bg-sunken disabled:opacity-50"
+              disabled={importBusy || !tariffUrl.trim()}
+              onClick={async () => {
+                setImportBusy(true);
+                setImportMsg(null);
+                try {
+                  const result = await suggestCost({
+                    url: tariffUrl.trim(),
+                    propertyId: data.property!.propertyId,
+                  });
+                  setImportMsg(
+                    result.available
+                      ? `Updated to ${money(result.copPerKwh, "COP")}/kWh${result.rateName ? ` (${result.rateName})` : ""}.`
+                      : "Import isn't configured yet on this deployment.",
+                  );
+                } catch (err) {
+                  setImportMsg(err instanceof Error ? err.message : "Import failed.");
+                } finally {
+                  setImportBusy(false);
+                }
+              }}
+            >
+              <Download size={15} />
+              {importBusy ? "Reading page…" : "Import"}
+            </button>
+          </div>
+          {importMsg && <p className="mt-2 text-sm text-muted">{importMsg}</p>}
+          <p className="mt-2 text-xs text-subtle">
+            Used for your margin report only — it never changes what drivers pay.
+          </p>
+        </Card>
+      )}
 
       <Card title="Chargers" className="mt-6">
         <div className="-m-5 overflow-x-auto">

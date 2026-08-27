@@ -307,7 +307,13 @@ export const stopTransaction = mutation({
         actor: args.ocppIdentity,
         data: args,
       });
-      return { accepted: true, sessionId: null, amounts: null, paymentMode: null };
+      return {
+        accepted: true,
+        sessionId: null,
+        amounts: null,
+        paymentMode: null,
+        driverEmail: null,
+      };
     }
     if (session.status === "completed") {
       return {
@@ -315,6 +321,7 @@ export const stopTransaction = mutation({
         sessionId: session._id,
         amounts: session.amounts ?? null,
         paymentMode: session.paymentMode,
+        driverEmail: session.driverEmail ?? null,
       };
     }
     const energyWh =
@@ -339,6 +346,7 @@ export const stopTransaction = mutation({
       sessionId: session._id,
       amounts,
       paymentMode: session.paymentMode,
+      driverEmail: session.driverEmail ?? null,
     };
   },
 });

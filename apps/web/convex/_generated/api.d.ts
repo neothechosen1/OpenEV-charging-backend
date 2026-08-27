@@ -11,7 +11,11 @@
 import type * as charging from "../charging.js";
 import type * as http from "../http.js";
 import type * as lib_stripeWebhook from "../lib/stripeWebhook.js";
+import type * as lib_wompiWebhook from "../lib/wompiWebhook.js";
+import type * as receipts from "../receipts.js";
 import type * as stripe from "../stripe.js";
+import type * as tools from "../tools.js";
+import type * as wompi from "../wompi.js";
 
 import type {
   ApiFromModules,
@@ -23,7 +27,11 @@ declare const fullApi: ApiFromModules<{
   charging: typeof charging;
   http: typeof http;
   "lib/stripeWebhook": typeof lib_stripeWebhook;
+  "lib/wompiWebhook": typeof lib_wompiWebhook;
+  receipts: typeof receipts;
   stripe: typeof stripe;
+  tools: typeof tools;
+  wompi: typeof wompi;
 }>;
 
 /**
@@ -54,4 +62,5 @@ export declare const internal: FilterApi<
 
 export declare const components: {
   evCharging: import("@openev/charging/_generated/component.js").ComponentApi<"evCharging">;
+  staticHosting: import("@convex-dev/static-hosting/_generated/component.js").ComponentApi<"staticHosting">;
 };

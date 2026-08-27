@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Driver from "./pages/Driver";
 import Session from "./pages/Session";
 import Admin from "./pages/Admin";
+import Tools from "./pages/Tools";
 import "./index.css";
 
 registerWebMcpTools(convexClient);
@@ -21,6 +22,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/c/:qrToken" element={<Driver />} />
           <Route path="/s/:sessionId" element={<Session />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/tools" element={<Tools />} />
         </Routes>
       </HashRouter>
     </ConvexProvider>

@@ -37,13 +37,38 @@ const go = (path: string) => {
 
 let registered = false;
 
-export function registerWebMcpTools(convex: ConvexReactClient): void {
-  if (registered) return;
-  const modelContext = navigator.modelContext;
-  if (!modelContext) return;
-  registered = true;
+/** True once tools are registered with an agent-capable browser. */
+export function webMcpActive(): boolean {
+  return registered;
+}
 
-  const tools: WebMcpTool[] = [
+/**
+ * Register on load, and keep retrying briefly — agent browsers may inject
+ * `navigator.modelContext` after our script runs.
+ */
+export function registerWebMcpTools(convex: ConvexReactClient): void {
+  let attempts = 0;
+  const tryRegister = () => {
+    if (registered) return;
+    const modelContext = navigator.modelContext;
+    if (!modelContext) {
+      if (++attempts < 20) setTimeout(tryRegister, 500);
+      return;
+    }
+    registered = true;
+    const tools = buildTools(convex);
+    if (typeof modelContext.registerTool === "function") {
+      for (const tool of tools) modelContext.registerTool(tool);
+    } else if (typeof modelContext.provideContext === "function") {
+      modelContext.provideContext({ tools });
+    }
+  };
+  tryRegister();
+}
+
+/** The site's agent-facing surface. Also rendered at /#/tools as a playground. */
+export function buildTools(convex: ConvexReactClient): WebMcpTool[] {
+  return [
     {
       name: "list_stations",
       description:
@@ -155,10 +180,4 @@ export function registerWebMcpTools(convex: ConvexReactClient): void {
       },
     },
   ];
-
-  if (typeof modelContext.registerTool === "function") {
-    for (const tool of tools) modelContext.registerTool(tool);
-  } else if (typeof modelContext.provideContext === "function") {
-    modelContext.provideContext({ tools });
-  }
 }

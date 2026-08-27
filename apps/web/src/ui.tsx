@@ -134,6 +134,12 @@ export function Shell({ children }: { children: ReactNode }) {
             >
               Dashboard
             </Link>
+            <Link
+              to="/tools"
+              className="rounded-lg px-3 py-2 text-muted hover:bg-sunken hover:text-ink"
+            >
+              Agent tools
+            </Link>
           </nav>
         </div>
       </header>

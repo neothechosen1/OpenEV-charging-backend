@@ -13,8 +13,9 @@ export default function Driver() {
   const preview = useQuery(api.charging.previewByQr, { qrToken });
   const demoCheckout = useMutation(api.charging.demoCheckout);
   const createCheckout = useAction(api.stripe.createCheckout);
+  const createPrepaid = useAction(api.wompi.createPrepaid);
   const [email, setEmail] = useState("");
-  const [busy, setBusy] = useState<"card" | "demo" | null>(null);
+  const [busy, setBusy] = useState<"card" | "cop" | "demo" | null>(null);
   const [notice, setNotice] = useState<string | null>(
     searchParams.get("canceled") ? "Payment canceled — nothing was charged." : null,
   );
@@ -71,6 +72,27 @@ export default function Driver() {
       });
       if (!result.available) {
         setNotice("Card payments aren't set up here yet — try the demo session.");
+        setBusy(null);
+        return;
+      }
+      window.location.href = result.url;
+    } catch (err) {
+      setNotice(err instanceof Error ? err.message : "Could not open the payment page.");
+      setBusy(null);
+    }
+  };
+
+  const startPrepaid = async () => {
+    setBusy("cop");
+    setNotice(null);
+    try {
+      const result = await createPrepaid({
+        qrToken,
+        origin: window.location.origin + window.location.pathname.replace(/\/$/, ""),
+        driverEmail: email$,
+      });
+      if (!result.available) {
+        setNotice("PSE/Nequi payments aren't set up here yet — try the demo session.");
         setBusy(null);
         return;
       }
@@ -170,6 +192,18 @@ export default function Driver() {
               <CreditCard size={16} />
               {busy === "card" ? "Opening secure checkout…" : "Pay with card"}
             </button>
+            {preview.currency === "COP" && (
+              <button
+                className={btnGhost}
+                disabled={!canStart || busy !== null}
+                onClick={startPrepaid}
+              >
+                <CreditCard size={16} />
+                {busy === "cop"
+                  ? "Opening secure checkout…"
+                  : `Prepay ${money(preview.authorizedMinor, "COP")} · PSE / Nequi / tarjeta`}
+              </button>
+            )}
             <button
               className={btnGhost}
               disabled={!canStart || busy !== null}

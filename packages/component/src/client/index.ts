@@ -70,6 +70,12 @@ export interface AdminCharger {
 
 export interface AdminOverview {
   organization: { name: string; currency: string; platformFeeBps: number };
+  property: {
+    propertyId: string;
+    name: string;
+    electricityCostPerKwhMinor: number;
+    currency: string;
+  } | null;
   kpis: {
     chargersTotal: number;
     chargersOnline: number;
