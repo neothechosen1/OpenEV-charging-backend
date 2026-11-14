@@ -1,8 +1,8 @@
+import { auditedMutation } from "./auditedMutations";
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
 
 /** Update a property's electricity cost; snapshotted into future sessions only. */
-export const setElectricityCost = mutation({
+export const setElectricityCost = auditedMutation("properties.setElectricityCost")({
   args: {
     propertyId: v.id("properties"),
     electricityCostPerKwhMinor: v.number(),

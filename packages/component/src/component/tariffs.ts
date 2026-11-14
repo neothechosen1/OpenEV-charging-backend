@@ -1,7 +1,8 @@
+import { auditedMutation } from "./auditedMutations";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import {query} from "./_generated/server";
 
-export const create = mutation({
+export const create = auditedMutation("tariffs.create")({
   args: {
     organizationId: v.id("organizations"),
     propertyId: v.optional(v.id("properties")),

@@ -1,5 +1,6 @@
+import { auditedMutation } from "./auditedMutations";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import {query} from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
 import { enqueueCommand } from "./commands";
 import { computeAmounts, runningCostMinor } from "./lib/pricing";
@@ -61,7 +62,7 @@ export const previewByQr = query({
 });
 
 /** Driver scanned the QR: create a session with a frozen tariff snapshot. */
-export const createFromQr = mutation({
+export const createFromQr = auditedMutation("sessions.createFromQr")({
   args: {
     qrToken: v.string(),
     driverEmail: v.optional(v.string()),
@@ -131,7 +132,7 @@ export const createFromQr = mutation({
 });
 
 /** Payment authorized (or demo): reserve the connector and queue RemoteStart. */
-export const markAuthorized = mutation({
+export const markAuthorized = auditedMutation("sessions.markAuthorized")({
   args: { sessionId: v.id("sessions"), paymentId: v.optional(v.id("payments")) },
   handler: async (ctx, args) => {
     const session = await ctx.db.get(args.sessionId);
@@ -158,7 +159,7 @@ export const markAuthorized = mutation({
 });
 
 /** Charger confirms charging began. Returns the backend-assigned transactionId. */
-export const startTransaction = mutation({
+export const startTransaction = auditedMutation("sessions.startTransaction")({
   args: {
     ocppIdentity: v.string(),
     connectorNumber: v.number(),
@@ -224,7 +225,7 @@ export const startTransaction = mutation({
  * subscribes to) and stores a sample. Auto-stops before the payment
  * authorization would be exceeded.
  */
-export const meterValues = mutation({
+export const meterValues = auditedMutation("sessions.meterValues")({
   args: {
     ocppIdentity: v.string(),
     ocppTransactionId: v.optional(v.number()),
@@ -286,7 +287,7 @@ export const meterValues = mutation({
 });
 
 /** Charger reports the transaction ended: finalize energy + amounts. Idempotent. */
-export const stopTransaction = mutation({
+export const stopTransaction = auditedMutation("sessions.stopTransaction")({
   args: {
     ocppIdentity: v.string(),
     ocppTransactionId: v.number(),
@@ -352,7 +353,7 @@ export const stopTransaction = mutation({
 });
 
 /** Driver (or admin) pressed Stop. */
-export const requestStop = mutation({
+export const requestStop = auditedMutation("sessions.requestStop")({
   args: { sessionId: v.id("sessions") },
   handler: async (ctx, args) => {
     const session = await ctx.db.get(args.sessionId);

@@ -1,5 +1,5 @@
+import { auditedMutation } from "./auditedMutations";
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 
@@ -28,7 +28,7 @@ export async function enqueueCommand(
  * The gateway calls this (via the host) piggybacked on every OCPP event
  * and on a short poll while the charger is connected.
  */
-export const takePending = mutation({
+export const takePending = auditedMutation("commands.takePending")({
   args: { ocppIdentity: v.string() },
   handler: async (ctx, args) => {
     const pending = await ctx.db
@@ -48,7 +48,7 @@ export const takePending = mutation({
   },
 });
 
-export const markResult = mutation({
+export const markResult = auditedMutation("commands.markResult")({
   args: {
     commandId: v.id("commands"),
     ok: v.boolean(),

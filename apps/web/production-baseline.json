@@ -1,0 +1,18 @@
+{
+  "modules": {
+    "_deps/5QCMGJR5.js": "71a77a360f929f51d54b1f60f6db571a7510e03800447968e1a1c5dcbab84c0a",
+    "_deps/EVCRMLF3.js": "4af576b0862658c8e6acd47283a99724712593e643edf06d2077ccd7a73c1ec4",
+    "_deps/KLHJQ4WB.js": "f72a046c824a8955f401b1af4a03287984611202f61384297b2a3334fe2d3ac2",
+    "_deps/VD43DGQX.js": "a0c7a821a2e9ae1fa3966612d15e8186d73166f896c5fd69032cd8c28cc1b378",
+    "charging.js": "6be3b0d91e656d3e1f87a3d39ffb0d62aebad70f1b76bdec22f5ffbc9a42c037",
+    "convex.config.js": "bcd5acbd2eabba9b763cc3fb9ea63c8f14ea5d9ad4eebe2f2a423883bd907370",
+    "http.js": "1e3244c4e715396b1b24de6689bada9cf22994b65066133cfdd3514a35eca55d",
+    "lib/stripeWebhook.js": "ebe2ac1118f24c1f24e905658236ceec8481eded799536f0b941fbd2be6aa59c",
+    "lib/wompiWebhook.js": "add25b433b8d180efe369bd6125cb2684c083eab0b9e518ab575d05ca12d30b5",
+    "receipts.js": "ee4b0b0d07af465e23b0d2cd92a4a22146b7c4853128df4ad30fc3d90b1b1633",
+    "schema.js": "5413de4a0eab06bfaccb852ffb0a2c3217c382ca41fda46bb2e6c3169f28ac3c",
+    "stripe.js": "9b1755f2713fd5361b466b5c6a994ec919684b896890e0f7f52ff3c13074eddd",
+    "tools.js": "96900e3c8002a7cc024d1dd27580680bda28eedc4a707ac1acf688675f18e1b9",
+    "wompi.js": "df30635b4866edf119be3d52053b09f32056d7e605de9afe619d6e0bed47047e"
+  }
+}

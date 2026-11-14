@@ -1,7 +1,8 @@
+import { auditedMutation } from "./auditedMutations";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import {query} from "./_generated/server";
 
-export const create = mutation({
+export const create = auditedMutation("payments.create")({
   args: {
     organizationId: v.id("organizations"),
     sessionId: v.id("sessions"),
@@ -20,7 +21,7 @@ export const create = mutation({
   },
 });
 
-export const setProviderRef = mutation({
+export const setProviderRef = auditedMutation("payments.setProviderRef")({
   args: { paymentId: v.id("payments"), providerRef: v.string() },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.paymentId, { providerRef: args.providerRef });
@@ -28,7 +29,7 @@ export const setProviderRef = mutation({
   },
 });
 
-export const markAuthorized = mutation({
+export const markAuthorized = auditedMutation("payments.markAuthorized")({
   args: { paymentId: v.id("payments"), providerRef: v.optional(v.string()) },
   handler: async (ctx, args) => {
     const payment = await ctx.db.get(args.paymentId);
@@ -41,7 +42,7 @@ export const markAuthorized = mutation({
   },
 });
 
-export const markCaptured = mutation({
+export const markCaptured = auditedMutation("payments.markCaptured")({
   args: { paymentId: v.id("payments"), capturedMinor: v.number() },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.paymentId, {
@@ -52,7 +53,7 @@ export const markCaptured = mutation({
   },
 });
 
-export const markCanceled = mutation({
+export const markCanceled = auditedMutation("payments.markCanceled")({
   args: { paymentId: v.id("payments") },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.paymentId, { status: "canceled" });
@@ -60,7 +61,7 @@ export const markCanceled = mutation({
   },
 });
 
-export const markFailed = mutation({
+export const markFailed = auditedMutation("payments.markFailed")({
   args: { paymentId: v.id("payments") },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.paymentId, { status: "failed" });
@@ -90,7 +91,7 @@ export const getByProviderRef = query({
  * Idempotency helper for webhook redeliveries and OCPP retries.
  * Returns true the first time a key is seen, false on repeats.
  */
-export const markProcessed = mutation({
+export const markProcessed = auditedMutation("payments.markProcessed")({
   args: { key: v.string() },
   handler: async (ctx, args) => {
     const existing = await ctx.db
