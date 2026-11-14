@@ -1,9 +1,10 @@
+import { auditedMutation } from "./auditedMutations";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import {query} from "./_generated/server";
 import { randomToken } from "./lib/ids";
 
 /** BootNotification: charger announces itself after power-up / reconnect. */
-export const boot = mutation({
+export const boot = auditedMutation("chargers.boot")({
   args: {
     ocppIdentity: v.string(),
     vendor: v.optional(v.string()),
@@ -45,7 +46,7 @@ export const boot = mutation({
   },
 });
 
-export const heartbeat = mutation({
+export const heartbeat = auditedMutation("chargers.heartbeat")({
   args: { ocppIdentity: v.string() },
   handler: async (ctx, args) => {
     const charger = await ctx.db
@@ -65,7 +66,7 @@ export const heartbeat = mutation({
 });
 
 /** StatusNotification: a connector changed state (Available/Charging/Faulted/...). */
-export const statusNotification = mutation({
+export const statusNotification = auditedMutation("chargers.statusNotification")({
   args: {
     ocppIdentity: v.string(),
     connectorNumber: v.number(),
@@ -107,7 +108,7 @@ export const statusNotification = mutation({
 });
 
 /** Gateway reports the charger's WebSocket dropped. */
-export const disconnected = mutation({
+export const disconnected = auditedMutation("chargers.disconnected")({
   args: { ocppIdentity: v.string() },
   handler: async (ctx, args) => {
     const charger = await ctx.db
@@ -125,7 +126,7 @@ export const disconnected = mutation({
 });
 
 /** Register a charger + its connectors; returns QR tokens to print. */
-export const register = mutation({
+export const register = auditedMutation("chargers.register")({
   args: {
     organizationId: v.id("organizations"),
     propertyId: v.id("properties"),

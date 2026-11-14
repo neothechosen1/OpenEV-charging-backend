@@ -27,6 +27,7 @@ export const sessionAmountsValidator = v.object({
 });
 
 export default defineSchema({
+ mutationAuditEvents: defineTable({actor:v.string(),actorUserId:v.optional(v.string()),actorType:v.string(),actorBasis:v.string(),action:v.string(),resourceType:v.string(),resourceId:v.string(),changedFields:v.array(v.string()),createdAt:v.number(),tenantRef:v.optional(v.string())}).index('by_createdAt',['createdAt']),
   organizations: defineTable({
     name: v.string(),
     slug: v.string(),

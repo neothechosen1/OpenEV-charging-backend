@@ -1,11 +1,11 @@
-import { mutation } from "./_generated/server";
+import { auditedMutation } from "./auditedMutations";
 
 /**
  * Seed the Colombia-first demo world: one organization (COP, 10% platform fee),
  * one property in Cali, one visitor tariff, one simulated charger (SIM-001).
  * Idempotent — safe to call repeatedly. Demo pricing only, not real rates.
  */
-export const seedDemo = mutation({
+export const seedDemo = auditedMutation("setup.seedDemo")({
   args: {},
   handler: async (ctx) => {
     const existing = await ctx.db
